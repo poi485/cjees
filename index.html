@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>2027학년도 신입생 입학 접수</title>
+  <!-- https 주소로 수정됨 -->
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #f4f7f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .kiosk-container {
+      width: 100vw;
+      height: 100vh;
+      max-width: 600px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 40px 30px;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    }
+
+    .header {
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 28px;
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: #e0e0e0;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #4A90E2;
+      transition: width 0.3s ease;
+    }
+
+    .step-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .step {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .step.active {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .question-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 10px;
+      word-break: keep-all;
+      line-height: 1.4;
+    }
+
+    input[type="text"], input[type="tel"], select {
+      width: 100%;
+      height: 70px;
+      font-size: 24px;
+      padding: 0 20px;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: #4A90E2;
+    }
+
+    .gender-group {
+      display: flex;
+      gap: 20px;
+    }
+    .gender-btn {
+      flex: 1;
+      height: 120px;
+      font-size: 28px;
+      font-weight: bold;
+      border: 2px solid #ccc;
+      border-radius: 16px;
+      background: #f9f9f9;
+      color: #444;
+      cursor: pointer;
+    }
+    .gender-btn.selected {
+      border-color: #4A90E2;
+      background-color: #EBF3FA;
+      color: #4A90E2;
+    }
+
+    .rrn-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .rrn-group input {
+      text-align: center;
+    }
+
+    .address-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .btn-search {
+      height: 60px;
+      background: #34495e;
+      color: #fff;
+      font-size: 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+    .summary-table th, .summary-table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      font-size: 18px;
+      text-align: left;
+    }
+    .summary-table th {
+      background: #f0f4f8;
+      width: 35%;
+      color: #555;
+    }
+
+    .privacy-box {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #e9ecef;
+      font-size: 15px;
+      color: #555;
+      max-height: 120px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+    }
+    .checkbox-label input {
+      width: 28px;
+      height: 28px;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 15px;
+    }
+    .btn-nav {
+      flex: 1;
+      height: 75px;
+      font-size: 24px;
+      font-weight: bold;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+    }
+    .btn-prev {
+      background: #e0e0e0;
+      color: #555;
+    }
+    .btn-next {
+      background: #4A90E2;
+      color: #ffffff;
+    }
+    .btn-start {
+      width: 100%;
+      height: 100px;
+      font-size: 32px;
+      background: #4A90E2;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      font-weight: bold;
+      box-shadow: 0 8px 15px rgba(74, 144, 226, 0.3);
+    }
+  </style>
+</head>
+<body>
+
+<div class="kiosk-container">
+  <div class="header">
+    <h1 id="kiosk-title">2027학년도 신입생 입학 접수</h1>
+    <div class="progress-bar" id="progress-container" style="display: none;">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+
+  <div class="step-content">
+
+    <div class="step active" id="step-0">
+      <div style="text-align: center;">
+        <h2 style="font-size: 32px; color: #333; margin-bottom: 20px;">환영합니다!</h2>
+        <p style="font-size: 20px; color: #666; margin-bottom: 40px;">아래 버튼을 눌러 입학 접수를 시작해 주세요.</p>
+        <button class="btn-start" onclick="nextStep()">접수하기</button>
+      </div>
+    </div>
+
+    <div class="step" id="step-1">
+      <div class="question-title">자녀의 성별을 선택해 주세요.</div>
+      <div class="gender-group">
+        <button class="gender-btn" onclick="selectGender('남')">남자</button>
+        <button class="gender-btn" onclick="selectGender('여')">여자</button>
+      </div>
+    </div>
+
+    <div class="step" id="step-2">
+      <div class="question-title">자녀의 이름을 입력해 주세요.</div>
+      <input type="text" id="child-name" placeholder="예: 홍길동">
+    </div>
+
+    <div class="step" id="step-3">
+      <div class="question-title">자녀의 주민등록번호를 입력해 주세요.</div>
+      <div class="rrn-group">
+        <input type="tel" id="rrn-1" maxlength="6" placeholder="앞 6자리" style="width: 48%;">
+        <span style="font-size: 24px;">-</span>
+        <input type="tel" id="rrn-2" maxlength="7" placeholder="뒤 7자리" style="width: 48%;">
+      </div>
+    </div>
+
+    <div class="step" id="step-4">
+      <div class="question-title">거주지 주소를 입력해 주세요.</div>
+      <div class="address-box">
+        <button class="btn-search" onclick="execDaumPostcode()">주소 검색하기</button>
+        
+        <div id="address-wrap" style="display:none; border:1px solid #ccc; width:100%; height:300px; margin: 10px 0; border-radius: 12px; overflow: hidden; position: relative;">
+          <img src="https://t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1;width: 30px;" onclick="foldDaumPostcode()" alt="접기 버튼">
+        </div>
+
+        <input type="text" id="address-basic" placeholder="기본 주소 (검색 시 자동입력)" readonly style="background-color: #eee;">
+        <input type="text" id="address-detail" placeholder="상세 주소 (동/호수 입력)">
+      </div>
+    </div>
+
+    <div class="step" id="step-5">
+      <div class="question-title">보호자(1명)의 이름을 입력해 주세요.</div>
+      <input type="text" id="parent-name" placeholder="예: 홍판서">
+    </div>
+
+    <div class="step" id="step-6">
+      <div class="question-title">보호자 연락처를 입력해 주세요.</div>
+      <input type="tel" id="parent-phone" maxlength="13" placeholder="010-0000-0000" oninput="autoHyphen(this)">
+    </div>
+
+    <div class="step" id="step-7">
+      <div class="question-title">입력하신 내용을 확인해 주세요.</div>
+      <table class="summary-table">
+        <tr><th>자녀 성별</th><td id="sum-gender"></td></tr>
+        <tr><th>자녀 성명</th><td id="sum-child-name"></td></tr>
+        <tr><th>주민번호</th><td id="sum-rrn"></td></tr>
+        <tr><th>주소</th><td id="sum-address"></td></tr>
+        <tr><th>보호자 성명</th><td id="sum-parent-name"></td></tr>
+        <tr><th>보호자 연락처</th><td id="sum-parent-phone"></td></tr>
+      </table>
+
+      <div class="privacy-box">
+        [개인정보 수집 및 이용 동의]<br>
+        수집 목적: 신입생 입학 접수 및 학사 관리<br>
+        수집 항목: 자녀 성별, 성명, 주민등록번호, 주소, 보호자 정보<br>
+        보유 기간: 입학 처리 완료 시까지
+      </div>
+      <label class="checkbox-label">
+        <input type="checkbox" id="privacy-agree">
+        개인정보 수집 및 이용에 동의합니다.
+      </label>
+    </div>
+
+    <div class="step" id="step-8">
+      <div style="text-align: center;">
+        <h2 style="font-size: 36px; color: #27ae60; margin-bottom: 20px;">접수가 완료되었습니다!</h2>
+        <p style="font-size: 20px; color: #666; margin-bottom: 30px;">제출해 주셔서 감사합니다.</p>
+        <p style="font-size: 16px; color: #999;"><span id="timer">5</span>초 후 초기 화면으로 돌아갑니다.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-buttons" id="nav-buttons" style="display: none;">
+    <button class="btn-nav btn-prev" onclick="prevStep()">이전</button>
+    <button class="btn-nav btn-next" id="btn-next-action" onclick="validateAndNext()">다음</button>
+  </div>
+</div>
+
+<script>
+  // 구글 앱스 스크립트 배포 URL (나중에 생성한 GAS Web App URL로 교체하세요)
+  const GAS_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+
+  let currentStep = 0;
+  const totalSteps = 7;
+
+  const formData = {
+    gender: '',
+    childName: '',
+    rrn: '',
+    address: '',
+    parentName: '',
+    parentPhone: ''
+  };
+
+  const wrap = document.getElementById('address-wrap');
+
+  function updateUI() {
+    document.querySelectorAll('.step').forEach((el, idx) => {
+      el.classList.toggle('active', idx === currentStep);
+    });
+
+    const navBtns = document.getElementById('nav-buttons');
+    const progressContainer = document.getElementById('progress-container');
+    const nextBtn = document.getElementById('btn-next-action');
+
+    if (currentStep === 0 || currentStep === 8) {
+      navBtns.style.display = 'none';
+      progressContainer.style.display = 'none';
+    } else {
+      navBtns.style.display = 'flex';
+      progressContainer.style.display = 'block';
+      
+      const percent = (currentStep / totalSteps) * 100;
+      document.getElementById('progress-fill').style.width = percent + '%';
+
+      if (currentStep === 7) {
+        nextBtn.innerText = '제출하기';
+        nextBtn.style.background = '#27ae60';
+        populateSummary();
+      } else {
+        nextBtn.innerText = '다음';
+        nextBtn.style.background = '#4A90E2';
+      }
+    }
+  }
+
+  function nextStep() {
+    if (currentStep < totalSteps + 1) {
+      currentStep++;
+      updateUI();
+    }
+  }
+
+  function prevStep() {
+    if (currentStep > 1) {
+      currentStep--;
+      updateUI();
+    } else if (currentStep === 1) {
+      currentStep = 0;
+      updateUI();
+    }
+  }
+
+  function selectGender(val) {
+    formData.gender = val;
+    const btns = document.querySelectorAll('.gender-btn');
+    btns.forEach(b => {
+      b.classList.toggle('selected', b.innerText === (val === '남' ? '남자' : '여자'));
+    });
+    setTimeout(() => nextStep(), 200); 
+  }
+
+  function autoHyphen(target) {
+    target.value = target.value
+      .replace(/[^0-9]/g, '')
+      .replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`)
+      .replace(/(\-{1,2})$/g, "");
+  }
+
+  function foldDaumPostcode() {
+    wrap.style.display = 'none';
+  }
+
+  function execDaumPostcode() {
+    new daum.Postcode({
+      oncomplete: function(data) {
+        document.getElementById('address-basic').value = data.address;
+        wrap.style.display = 'none';
+        document.getElementById('address-detail').focus();
+      },
+      width: '100%',
+      height: '100%'
+    }).embed(wrap); 
+
+    wrap.style.display = 'block'; 
+  }
+
+  function validateAndNext() {
+    if (currentStep === 1 && !formData.gender) {
+      alert("성별을 선택해 주세요.");
+      return;
+    }
+    if (currentStep === 2) {
+      const name = document.getElementById('child-name').value.trim();
+      if (!name) { alert("자녀 이름을 입력해 주세요."); return; }
+      formData.childName = name;
+    }
+    if (currentStep === 3) {
+      const r1 = document.getElementById('rrn-1').value.trim();
+      const r2 = document.getElementById('rrn-2').value.trim();
+      if (r1.length !== 6 || r2.length !== 7) {
+        alert("주민등록번호 13자리를 올바르게 입력해 주세요.");
+        return;
+      }
+      formData.rrn = `${r1}-${r2}`;
+    }
+    if (currentStep === 4) {
+      const basic = document.getElementById('address-basic').value.trim();
+      const detail = document.getElementById('address-detail').value.trim();
+      if (!basic) { alert("주소 검색을 통해 기본 주소를 입력해 주세요."); return; }
+      if (!detail) { alert("상세 주소를 입력해 주세요."); return; }
+      formData.address = `${basic} ${detail}`.trim();
+    }
+    if (currentStep === 5) {
+      const pName = document.getElementById('parent-name').value.trim();
+      if (!pName) { alert("보호자 이름을 입력해 주세요."); return; }
+      formData.parentName = pName;
+    }
+    if (currentStep === 6) {
+      const pPhone = document.getElementById('parent-phone').value.trim();
+      if (pPhone.length < 10) { alert("올바른 연락처를 입력해 주세요."); return; }
+      formData.parentPhone = pPhone;
+    }
+    if (currentStep === 7) {
+      if (!document.getElementById('privacy-agree').checked) {
+        alert("개인정보 수집 및 이용에 동의하셔야 제출이 가능합니다.");
+        return;
+      }
+      submitData();
+      return;
+    }
+
+    nextStep();
+  }
+
+  function populateSummary() {
+    document.getElementById('sum-gender').innerText = formData.gender === '남' ? '남자' : '여자';
+    document.getElementById('sum-child-name').innerText = formData.childName;
+    const rrnParts = formData.rrn.split('-');
+    document.getElementById('sum-rrn').innerText = `${rrnParts[0]}-${rrnParts[1].substring(0,1)}******`;
+    document.getElementById('sum-address').innerText = formData.address;
+    document.getElementById('sum-parent-name').innerText = formData.parentName;
+    document.getElementById('sum-parent-phone').innerText = formData.parentPhone;
+  }
+
+  function submitData() {
+    const nextBtn = document.getElementById('btn-next-action');
+    nextBtn.disabled = true;
+    nextBtn.innerText = '전송 중...';
+
+    fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    })
+    .then(() => {
+      currentStep = 8;
+      updateUI();
+      startAutoResetTimer();
+    })
+    .catch(err => {
+      alert("전송 중 오류가 발생했습니다. 다시 시도해 주세요.");
+      nextBtn.disabled = false;
+      nextBtn.innerText = '제출하기';
+    });
+  }
+
+  function startAutoResetTimer() {
+    let timeLeft = 5;
+    const timerEl = document.getElementById('timer');
+    const interval = setInterval(() => {
+      timeLeft--;
+      timerEl.innerText = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        location.reload(); 
+      }
+    }, 1000);
+  }
+</script>
+</body>
+</html>
