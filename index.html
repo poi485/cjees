@@ -388,7 +388,7 @@
 
 <script>
   // 이곳에 새로 배포한 GAS Web App URL을 넣으세요.
-  const GAS_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycby1rLtmFZYE43iFb3E_UnjkX43T8keod6_E_NdzKmoy_A1KtbKSTFLLf0Q7cZV9st0a/exec";
 
   let currentStep = 0;
   const totalSteps = 9; 
@@ -604,7 +604,7 @@
       timerEl.innerText = timeLeft;
       if (timeLeft <= 0) {
         clearInterval(interval);
-        location.reload(); 
+        location.reload(); 	
       }
     }, 1000);
   }
