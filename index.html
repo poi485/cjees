@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>2027학년도 신입생/전입생 입학 접수</title>
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <!-- 화면 캡처(저장) 기능을 위한 라이브러리 추가 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -35,6 +37,7 @@
       padding: 40px 30px;
       position: relative;
       box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      overflow-y: auto; /* 스마트폰 세로 스크롤 허용 */
     }
 
     .header {
@@ -83,7 +86,7 @@
     }
 
     .question-title {
-      font-size: 26px;
+      font-size: 24px;
       font-weight: 700;
       color: #333;
       margin-bottom: 10px;
@@ -93,9 +96,9 @@
 
     input[type="text"], input[type="tel"], select {
       width: 100%;
-      height: 70px;
-      font-size: 24px;
-      padding: 0 20px;
+      height: 60px;
+      font-size: 20px;
+      padding: 0 15px;
       border: 2px solid #ccc;
       border-radius: 12px;
       outline: none;
@@ -107,12 +110,12 @@
 
     .btn-group-row {
       display: flex;
-      gap: 20px;
+      gap: 15px;
     }
     .btn-large {
       flex: 1;
-      height: 120px;
-      font-size: 28px;
+      height: 100px;
+      font-size: 24px;
       font-weight: bold;
       border: 2px solid #ccc;
       border-radius: 16px;
@@ -130,14 +133,14 @@
     .grid-group {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 15px;
+      gap: 10px;
     }
     .btn-grid {
-      height: 80px;
-      font-size: 24px;
+      height: 70px;
+      font-size: 20px;
       font-weight: bold;
       border: 2px solid #ccc;
-      border-radius: 16px;
+      border-radius: 12px;
       background: #f9f9f9;
       color: #444;
       cursor: pointer;
@@ -160,15 +163,15 @@
     .address-box {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
     .btn-search {
-      height: 60px;
+      height: 50px;
       background: #34495e;
       color: #fff;
-      font-size: 20px;
+      font-size: 18px;
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
     }
 
@@ -179,8 +182,8 @@
     }
     .summary-table th, .summary-table td {
       border: 1px solid #ddd;
-      padding: 12px;
-      font-size: 18px;
+      padding: 10px;
+      font-size: 16px;
       text-align: left;
     }
     .summary-table th {
@@ -194,7 +197,7 @@
       padding: 15px;
       border-radius: 10px;
       border: 1px solid #e9ecef;
-      font-size: 15px;
+      font-size: 14px;
       color: #555;
       max-height: 120px;
       overflow-y: auto;
@@ -204,27 +207,28 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
       color: #333;
       cursor: pointer;
     }
     .checkbox-label input {
-      width: 28px;
-      height: 28px;
+      width: 24px;
+      height: 24px;
     }
 
     .nav-buttons {
       display: flex;
-      gap: 15px;
+      gap: 10px;
+      margin-top: 10px;
     }
     .btn-nav {
       flex: 1;
-      height: 75px;
-      font-size: 24px;
+      height: 60px;
+      font-size: 20px;
       font-weight: bold;
       border: none;
-      border-radius: 16px;
+      border-radius: 12px;
       cursor: pointer;
     }
     .btn-prev {
@@ -237,16 +241,17 @@
     }
     .btn-start {
       width: 100%;
-      height: 100px;
-      font-size: 32px;
+      height: 80px;
+      font-size: 26px;
       background: #4A90E2;
       color: white;
       border: none;
-      border-radius: 20px;
+      border-radius: 16px;
       font-weight: bold;
       box-shadow: 0 8px 15px rgba(74, 144, 226, 0.3);
     }
   </style>
+  <meta name="robots" content="noindex, nofollow">
 </head>
 <body>
 
@@ -262,8 +267,8 @@
 
     <div class="step active" id="step-0">
       <div style="text-align: center;">
-        <h2 style="font-size: 32px; color: #333; margin-bottom: 20px;">환영합니다!</h2>
-        <p style="font-size: 20px; color: #666; margin-bottom: 40px;">아래 버튼을 눌러 입학 접수를 시작해 주세요.</p>
+        <h2 style="font-size: 26px; color: #333; margin-bottom: 20px; line-height: 1.4;">청주교육대학교 부설초등학교에<br>오신 것을 환영합니다!</h2>
+        <p style="font-size: 18px; color: #666; margin-bottom: 40px;">아래 버튼을 눌러 입학 접수를 시작해 주세요.</p>
         <button class="btn-start" onclick="nextStep()">접수하기</button>
       </div>
     </div>
@@ -329,13 +334,13 @@
 
     <!-- [7] 보호자 성명 -->
     <div class="step" id="step-7">
-      <div class="question-title">보호자(1명)의 이름을 입력해 주세요.</div>
+      <div class="question-title">연락을 받으실 보호자의 이름을 입력해 주세요.</div>
       <input type="text" id="parent-name" placeholder="예: 홍판서" autocomplete="off">
     </div>
 
     <!-- [8] 보호자 연락처 -->
     <div class="step" id="step-8">
-      <div class="question-title">보호자 연락처를 입력해 주세요.</div>
+      <div class="question-title">연락을 받으실 보호자 연락처를 입력해 주세요.</div>
       <input type="tel" id="parent-phone" maxlength="13" placeholder="010-0000-0000" oninput="autoHyphen(this)" autocomplete="off">
     </div>
 
@@ -365,16 +370,34 @@
       </label>
     </div>
 
-    <!-- [10] 완료 -->
+    <!-- [10] 완료 (캡처 영역 추가 및 타이머 제거) -->
     <div class="step" id="step-10">
       <div style="text-align: center;">
-        <h2 style="font-size: 36px; color: #27ae60; margin-bottom: 20px;">접수가 완료되었습니다!</h2>
-        <div style="background:#f0f4f8; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
-          <p style="font-size: 18px; color: #555; margin-bottom: 10px;">부여된 접수 번호</p>
-          <p style="font-size: 36px; font-weight: bold; color: #4A90E2;" id="final-receipt"></p>
+        
+        <!-- 캡처될 접수증 영역 -->
+        <div id="receipt-capture-area" style="background:#ffffff; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+          <h2 style="font-size: 28px; color: #27ae60; margin-bottom: 20px;">접수가 완료되었습니다!</h2>
+          <div style="background:#f0f4f8; padding: 20px; border-radius: 12px; margin-bottom: 10px;">
+            <p style="font-size: 16px; color: #555; margin-bottom: 10px;">부여된 접수 번호</p>
+            <p style="font-size: 32px; font-weight: bold; color: #4A90E2;" id="final-receipt"></p>
+          </div>
+          <p style="font-size: 18px; color: #333; font-weight: bold; margin-top: 15px;">청주교육대학교 부설초등학교</p>
         </div>
-        <p style="font-size: 20px; color: #666; margin-bottom: 30px;">제출해 주셔서 감사합니다.</p>
-        <p style="font-size: 16px; color: #999;"><span id="timer">5</span>초 후 초기 화면으로 돌아갑니다.</p>
+        
+        <!-- 중요 안내 사항 -->
+        <div style="background: #fff3f3; border-left: 4px solid #e74c3c; padding: 15px; margin-bottom: 25px; text-align: left;">
+          <p style="font-size: 18px; color: #c0392b; font-weight: bold; word-break: keep-all; line-height: 1.4;">
+            ※ 필수 안내사항<br>
+            스마트폰 온라인 접수 후, 준비해주신 증빙 서류는 꼭 현장 접수대에 제출하셔야 최종 완료됩니다.
+          </p>
+        </div>
+
+        <!-- 하단 액션 버튼 -->
+        <div style="display: flex; gap: 10px; justify-content: center;">
+          <button onclick="saveReceiptImage()" style="flex: 1; height: 60px; font-size: 18px; background: #34495e; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;">사진 저장하기</button>
+          <button onclick="location.reload()" style="flex: 1; height: 60px; font-size: 18px; background: #e0e0e0; color: #555; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;">처음으로</button>
+        </div>
+        
       </div>
     </div>
 
@@ -387,7 +410,6 @@
 </div>
 
 <script>
-  // 이곳에 새로 배포한 GAS Web App URL을 넣으세요.
   const GAS_URL = "https://script.google.com/macros/s/AKfycby1rLtmFZYE43iFb3E_UnjkX43T8keod6_E_NdzKmoy_A1KtbKSTFLLf0Q7cZV9st0a/exec";
 
   let currentStep = 0;
@@ -572,7 +594,6 @@
     nextBtn.disabled = true;
     nextBtn.innerText = '전송 중...';
 
-    // JSON을 단순 텍스트 형식으로 전송하여 CORS 정책 우회 (JSON 결과값 리턴 받기 위함)
     fetch(GAS_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -584,7 +605,7 @@
         document.getElementById('final-receipt').innerText = data.receiptNo;
         currentStep = 10;
         updateUI();
-        startAutoResetTimer();
+        // 타이머 자동 초기화 함수(startAutoResetTimer) 호출 제거됨
       } else {
         throw new Error(data.message || "서버 에러");
       }
@@ -596,17 +617,17 @@
     });
   }
 
-  function startAutoResetTimer() {
-    let timeLeft = 5;
-    const timerEl = document.getElementById('timer');
-    const interval = setInterval(() => {
-      timeLeft--;
-      timerEl.innerText = timeLeft;
-      if (timeLeft <= 0) {
-        clearInterval(interval);
-        location.reload(); 	
-      }
-    }, 1000);
+  // 화면 캡처 및 이미지 다운로드 함수
+  function saveReceiptImage() {
+    const captureDiv = document.getElementById('receipt-capture-area');
+    
+    // 모바일 환경을 고려하여 캡처 품질(scale)을 높임
+    html2canvas(captureDiv, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `입학접수증_${formData.childName}.png`; // 파일명에 학생 이름 자동 포함
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
   }
 </script>
 </body>
