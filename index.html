@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>2027학년도 신입생 입학 접수</title>
-  <!-- https 주소로 수정됨 -->
+  <title>2027학년도 신입생/전입생 입학 접수</title>
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <style>
     * {
@@ -106,11 +105,11 @@
       border-color: #4A90E2;
     }
 
-    .gender-group {
+    .btn-group-row {
       display: flex;
       gap: 20px;
     }
-    .gender-btn {
+    .btn-large {
       flex: 1;
       height: 120px;
       font-size: 28px;
@@ -120,8 +119,30 @@
       background: #f9f9f9;
       color: #444;
       cursor: pointer;
+      transition: all 0.2s;
     }
-    .gender-btn.selected {
+    .btn-large.selected {
+      border-color: #4A90E2;
+      background-color: #EBF3FA;
+      color: #4A90E2;
+    }
+
+    .grid-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+    .btn-grid {
+      height: 80px;
+      font-size: 24px;
+      font-weight: bold;
+      border: 2px solid #ccc;
+      border-radius: 16px;
+      background: #f9f9f9;
+      color: #444;
+      cursor: pointer;
+    }
+    .btn-grid.selected {
       border-color: #4A90E2;
       background-color: #EBF3FA;
       color: #4A90E2;
@@ -231,7 +252,7 @@
 
 <div class="kiosk-container">
   <div class="header">
-    <h1 id="kiosk-title">2027학년도 신입생 입학 접수</h1>
+    <h1 id="kiosk-title">2027학년도 학생 입학 접수</h1>
     <div class="progress-bar" id="progress-container" style="display: none;">
       <div class="progress-fill" id="progress-fill"></div>
     </div>
@@ -247,67 +268,95 @@
       </div>
     </div>
 
+    <!-- [1] 지원 유형 (신입생 / 전입생) -->
     <div class="step" id="step-1">
-      <div class="question-title">자녀의 성별을 선택해 주세요.</div>
-      <div class="gender-group">
-        <button class="gender-btn" onclick="selectGender('남')">남자</button>
-        <button class="gender-btn" onclick="selectGender('여')">여자</button>
+      <div class="question-title">입학 유형을 선택해 주세요.</div>
+      <div class="btn-group-row">
+        <button class="btn-large type-btn" onclick="selectType('신입생')">신입생 (1학년)</button>
+        <button class="btn-large type-btn" onclick="selectType('전입생')">전입생 (2~6학년)</button>
       </div>
     </div>
 
+    <!-- [2] 전입생 학년 선택 -->
     <div class="step" id="step-2">
-      <div class="question-title">자녀의 이름을 입력해 주세요.</div>
-      <input type="text" id="child-name" placeholder="예: 홍길동">
+      <div class="question-title">전입할 학년을 선택해 주세요.</div>
+      <div class="grid-group">
+        <button class="btn-grid grade-btn" onclick="selectGrade(2)">2학년</button>
+        <button class="btn-grid grade-btn" onclick="selectGrade(3)">3학년</button>
+        <button class="btn-grid grade-btn" onclick="selectGrade(4)">4학년</button>
+        <button class="btn-grid grade-btn" onclick="selectGrade(5)">5학년</button>
+        <button class="btn-grid grade-btn" onclick="selectGrade(6)" style="grid-column: span 2;">6학년</button>
+      </div>
     </div>
 
+    <!-- [3] 성별 선택 -->
     <div class="step" id="step-3">
+      <div class="question-title">자녀의 성별을 선택해 주세요.</div>
+      <div class="btn-group-row">
+        <button class="btn-large gender-btn" onclick="selectGender('남')">남자</button>
+        <button class="btn-large gender-btn" onclick="selectGender('여')">여자</button>
+      </div>
+    </div>
+
+    <!-- [4] 이름 -->
+    <div class="step" id="step-4">
+      <div class="question-title">자녀의 이름을 입력해 주세요.</div>
+      <input type="text" id="child-name" placeholder="예: 홍길동" autocomplete="off">
+    </div>
+
+    <!-- [5] 주민등록번호 -->
+    <div class="step" id="step-5">
       <div class="question-title">자녀의 주민등록번호를 입력해 주세요.</div>
       <div class="rrn-group">
-        <input type="tel" id="rrn-1" maxlength="6" placeholder="앞 6자리" style="width: 48%;">
+        <input type="tel" id="rrn-1" maxlength="6" placeholder="앞 6자리" style="width: 48%;" autocomplete="off">
         <span style="font-size: 24px;">-</span>
-        <input type="tel" id="rrn-2" maxlength="7" placeholder="뒤 7자리" style="width: 48%;">
+        <input type="tel" id="rrn-2" maxlength="7" placeholder="뒤 7자리" style="width: 48%;" autocomplete="off">
       </div>
     </div>
 
-    <div class="step" id="step-4">
+    <!-- [6] 주소 -->
+    <div class="step" id="step-6">
       <div class="question-title">거주지 주소를 입력해 주세요.</div>
       <div class="address-box">
         <button class="btn-search" onclick="execDaumPostcode()">주소 검색하기</button>
-        
         <div id="address-wrap" style="display:none; border:1px solid #ccc; width:100%; height:300px; margin: 10px 0; border-radius: 12px; overflow: hidden; position: relative;">
           <img src="https://t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1;width: 30px;" onclick="foldDaumPostcode()" alt="접기 버튼">
         </div>
-
         <input type="text" id="address-basic" placeholder="기본 주소 (검색 시 자동입력)" readonly style="background-color: #eee;">
-        <input type="text" id="address-detail" placeholder="상세 주소 (동/호수 입력)">
+        <input type="text" id="address-detail" placeholder="상세 주소 (동/호수 입력)" autocomplete="off">
       </div>
     </div>
 
-    <div class="step" id="step-5">
-      <div class="question-title">보호자(1명)의 이름을 입력해 주세요.</div>
-      <input type="text" id="parent-name" placeholder="예: 홍판서">
-    </div>
-
-    <div class="step" id="step-6">
-      <div class="question-title">보호자 연락처를 입력해 주세요.</div>
-      <input type="tel" id="parent-phone" maxlength="13" placeholder="010-0000-0000" oninput="autoHyphen(this)">
-    </div>
-
+    <!-- [7] 보호자 성명 -->
     <div class="step" id="step-7">
+      <div class="question-title">보호자(1명)의 이름을 입력해 주세요.</div>
+      <input type="text" id="parent-name" placeholder="예: 홍판서" autocomplete="off">
+    </div>
+
+    <!-- [8] 보호자 연락처 -->
+    <div class="step" id="step-8">
+      <div class="question-title">보호자 연락처를 입력해 주세요.</div>
+      <input type="tel" id="parent-phone" maxlength="13" placeholder="010-0000-0000" oninput="autoHyphen(this)" autocomplete="off">
+    </div>
+
+    <!-- [9] 요약 및 동의 -->
+    <div class="step" id="step-9">
       <div class="question-title">입력하신 내용을 확인해 주세요.</div>
       <table class="summary-table">
+        <tr><th>접수 번호</th><td id="sum-receipt" style="font-weight: bold; color: #777;"></td></tr>
+        <tr><th>지원 구분</th><td id="sum-type"></td></tr>
         <tr><th>자녀 성별</th><td id="sum-gender"></td></tr>
         <tr><th>자녀 성명</th><td id="sum-child-name"></td></tr>
         <tr><th>주민번호</th><td id="sum-rrn"></td></tr>
         <tr><th>주소</th><td id="sum-address"></td></tr>
         <tr><th>보호자 성명</th><td id="sum-parent-name"></td></tr>
-        <tr><th>보호자 연락처</th><td id="sum-parent-phone"></td></tr>
+        <tr><th>연락처</th><td id="sum-parent-phone"></td></tr>
       </table>
 
       <div class="privacy-box">
         [개인정보 수집 및 이용 동의]<br>
-        수집 목적: 신입생 입학 접수 및 학사 관리<br>
-        수집 항목: 자녀 성별, 성명, 주민등록번호, 주소, 보호자 정보<br>
+        수집 목적: 신입생/전입생 입학 접수 및 학사 관리<br>
+        수집 항목: 자녀 정보, 주민등록번호, 주소, 보호자 정보<br>
         보유 기간: 입학 처리 완료 시까지
       </div>
       <label class="checkbox-label">
@@ -316,9 +365,14 @@
       </label>
     </div>
 
-    <div class="step" id="step-8">
+    <!-- [10] 완료 -->
+    <div class="step" id="step-10">
       <div style="text-align: center;">
         <h2 style="font-size: 36px; color: #27ae60; margin-bottom: 20px;">접수가 완료되었습니다!</h2>
+        <div style="background:#f0f4f8; padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+          <p style="font-size: 18px; color: #555; margin-bottom: 10px;">부여된 접수 번호</p>
+          <p style="font-size: 36px; font-weight: bold; color: #4A90E2;" id="final-receipt"></p>
+        </div>
         <p style="font-size: 20px; color: #666; margin-bottom: 30px;">제출해 주셔서 감사합니다.</p>
         <p style="font-size: 16px; color: #999;"><span id="timer">5</span>초 후 초기 화면으로 돌아갑니다.</p>
       </div>
@@ -333,13 +387,15 @@
 </div>
 
 <script>
-  // 구글 앱스 스크립트 배포 URL (나중에 생성한 GAS Web App URL로 교체하세요)
+  // 이곳에 새로 배포한 GAS Web App URL을 넣으세요.
   const GAS_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE";
 
   let currentStep = 0;
-  const totalSteps = 7;
+  const totalSteps = 9; 
 
   const formData = {
+    type: '',
+    grade: 1,
     gender: '',
     childName: '',
     rrn: '',
@@ -359,7 +415,7 @@
     const progressContainer = document.getElementById('progress-container');
     const nextBtn = document.getElementById('btn-next-action');
 
-    if (currentStep === 0 || currentStep === 8) {
+    if (currentStep === 0 || currentStep === 10) {
       navBtns.style.display = 'none';
       progressContainer.style.display = 'none';
     } else {
@@ -369,7 +425,7 @@
       const percent = (currentStep / totalSteps) * 100;
       document.getElementById('progress-fill').style.width = percent + '%';
 
-      if (currentStep === 7) {
+      if (currentStep === 9) {
         nextBtn.innerText = '제출하기';
         nextBtn.style.background = '#27ae60';
         populateSummary();
@@ -381,6 +437,11 @@
   }
 
   function nextStep() {
+    if (currentStep === 1 && formData.type === '신입생') {
+      currentStep = 3; 
+      updateUI();
+      return;
+    }
     if (currentStep < totalSteps + 1) {
       currentStep++;
       updateUI();
@@ -388,6 +449,11 @@
   }
 
   function prevStep() {
+    if (currentStep === 3 && formData.type === '신입생') {
+      currentStep = 1; 
+      updateUI();
+      return;
+    }
     if (currentStep > 1) {
       currentStep--;
       updateUI();
@@ -397,12 +463,25 @@
     }
   }
 
+  function selectType(val) {
+    formData.type = val;
+    if (val === '신입생') formData.grade = 1;
+    const btns = document.querySelectorAll('.type-btn');
+    btns.forEach(b => b.classList.toggle('selected', b.innerText.includes(val)));
+    setTimeout(() => nextStep(), 200);
+  }
+
+  function selectGrade(val) {
+    formData.grade = val;
+    const btns = document.querySelectorAll('.grade-btn');
+    btns.forEach(b => b.classList.toggle('selected', b.innerText.includes(val)));
+    setTimeout(() => nextStep(), 200);
+  }
+
   function selectGender(val) {
     formData.gender = val;
     const btns = document.querySelectorAll('.gender-btn');
-    btns.forEach(b => {
-      b.classList.toggle('selected', b.innerText === (val === '남' ? '남자' : '여자'));
-    });
+    btns.forEach(b => b.classList.toggle('selected', b.innerText === (val === '남' ? '남자' : '여자')));
     setTimeout(() => nextStep(), 200); 
   }
 
@@ -418,6 +497,7 @@
   }
 
   function execDaumPostcode() {
+    wrap.style.display = 'block'; 
     new daum.Postcode({
       oncomplete: function(data) {
         document.getElementById('address-basic').value = data.address;
@@ -427,21 +507,19 @@
       width: '100%',
       height: '100%'
     }).embed(wrap); 
-
-    wrap.style.display = 'block'; 
   }
 
   function validateAndNext() {
-    if (currentStep === 1 && !formData.gender) {
-      alert("성별을 선택해 주세요.");
-      return;
-    }
-    if (currentStep === 2) {
+    if (currentStep === 1 && !formData.type) { alert("입학 유형을 선택해 주세요."); return; }
+    if (currentStep === 2 && !formData.grade) { alert("전입할 학년을 선택해 주세요."); return; }
+    if (currentStep === 3 && !formData.gender) { alert("성별을 선택해 주세요."); return; }
+    
+    if (currentStep === 4) {
       const name = document.getElementById('child-name').value.trim();
       if (!name) { alert("자녀 이름을 입력해 주세요."); return; }
       formData.childName = name;
     }
-    if (currentStep === 3) {
+    if (currentStep === 5) {
       const r1 = document.getElementById('rrn-1').value.trim();
       const r2 = document.getElementById('rrn-2').value.trim();
       if (r1.length !== 6 || r2.length !== 7) {
@@ -450,24 +528,24 @@
       }
       formData.rrn = `${r1}-${r2}`;
     }
-    if (currentStep === 4) {
+    if (currentStep === 6) {
       const basic = document.getElementById('address-basic').value.trim();
       const detail = document.getElementById('address-detail').value.trim();
       if (!basic) { alert("주소 검색을 통해 기본 주소를 입력해 주세요."); return; }
       if (!detail) { alert("상세 주소를 입력해 주세요."); return; }
       formData.address = `${basic} ${detail}`.trim();
     }
-    if (currentStep === 5) {
+    if (currentStep === 7) {
       const pName = document.getElementById('parent-name').value.trim();
       if (!pName) { alert("보호자 이름을 입력해 주세요."); return; }
       formData.parentName = pName;
     }
-    if (currentStep === 6) {
+    if (currentStep === 8) {
       const pPhone = document.getElementById('parent-phone').value.trim();
       if (pPhone.length < 10) { alert("올바른 연락처를 입력해 주세요."); return; }
       formData.parentPhone = pPhone;
     }
-    if (currentStep === 7) {
+    if (currentStep === 9) {
       if (!document.getElementById('privacy-agree').checked) {
         alert("개인정보 수집 및 이용에 동의하셔야 제출이 가능합니다.");
         return;
@@ -475,15 +553,15 @@
       submitData();
       return;
     }
-
     nextStep();
   }
 
   function populateSummary() {
+    document.getElementById('sum-receipt').innerText = "제출 완료 시 자동 발급"; 
+    document.getElementById('sum-type').innerText = formData.type === '신입생' ? '신입생 (1학년)' : `전입생 (${formData.grade}학년)`;
     document.getElementById('sum-gender').innerText = formData.gender === '남' ? '남자' : '여자';
     document.getElementById('sum-child-name').innerText = formData.childName;
-    const rrnParts = formData.rrn.split('-');
-    document.getElementById('sum-rrn').innerText = `${rrnParts[0]}-${rrnParts[1].substring(0,1)}******`;
+    document.getElementById('sum-rrn').innerText = formData.rrn;
     document.getElementById('sum-address').innerText = formData.address;
     document.getElementById('sum-parent-name').innerText = formData.parentName;
     document.getElementById('sum-parent-phone').innerText = formData.parentPhone;
@@ -494,16 +572,22 @@
     nextBtn.disabled = true;
     nextBtn.innerText = '전송 중...';
 
+    // JSON을 단순 텍스트 형식으로 전송하여 CORS 정책 우회 (JSON 결과값 리턴 받기 위함)
     fetch(GAS_URL, {
       method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(formData)
     })
-    .then(() => {
-      currentStep = 8;
-      updateUI();
-      startAutoResetTimer();
+    .then(response => response.json())
+    .then(data => {
+      if(data.result === "success") {
+        document.getElementById('final-receipt').innerText = data.receiptNo;
+        currentStep = 10;
+        updateUI();
+        startAutoResetTimer();
+      } else {
+        throw new Error(data.message || "서버 에러");
+      }
     })
     .catch(err => {
       alert("전송 중 오류가 발생했습니다. 다시 시도해 주세요.");
