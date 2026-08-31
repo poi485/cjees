@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>2027학년도 신입생/전입생 입학 접수</title>
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-  <!-- 화면 캡처(저장) 기능을 위한 라이브러리 추가 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     * {
@@ -20,24 +19,22 @@
       background-color: #f4f7f6;
       display: flex;
       justify-content: center;
-      align-items: center;
       min-height: 100vh;
-      overflow: hidden;
       user-select: none;
     }
 
     .kiosk-container {
       width: 100vw;
-      height: 100vh;
+      min-height: 100vh;
+      min-height: 100dvh; 
       max-width: 600px;
       background: #ffffff;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 40px 30px;
+      padding: 40px 25px; 
       position: relative;
       box-shadow: 0 0 20px rgba(0,0,0,0.05);
-      overflow-y: auto; /* 스마트폰 세로 스크롤 허용 */
     }
 
     .header {
@@ -67,7 +64,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      margin: 20px 0;
+      margin: 30px 0;
     }
 
     .step {
@@ -220,7 +217,8 @@
     .nav-buttons {
       display: flex;
       gap: 10px;
-      margin-top: 10px;
+      margin-top: 20px;
+      margin-bottom: 20px; 
     }
     .btn-nav {
       flex: 1;
@@ -268,12 +266,21 @@
     <div class="step active" id="step-0">
       <div style="text-align: center;">
         <h2 style="font-size: 26px; color: #333; margin-bottom: 20px; line-height: 1.4;">청주교육대학교 부설초등학교에<br>오신 것을 환영합니다!</h2>
-        <p style="font-size: 18px; color: #666; margin-bottom: 40px;">아래 버튼을 눌러 입학 접수를 시작해 주세요.</p>
+        
+        <!-- 신규 추가된 당첨취소 경고 영역 -->
+        <div style="background: #fff3f3; border: 2px solid #e74c3c; padding: 15px; border-radius: 12px; margin-bottom: 30px; text-align: left; font-size: 15px; color: #333; line-height: 1.6; word-break: keep-all;">
+          <strong style="color: #c0392b; font-size: 18px;">[당첨취소에 대한 안내]</strong><br>
+          (1) 원서접수 게시일(2026.10.6.) 현재 청주시에 주민등록이 되어 있지 않은 경우<br>
+          (2) 원서 기재 사항이 사실과 다른 경우<br>
+          (3) 접수 번호를 달리하여 원서를 여러 번(중복 및 이중 지원) 접수한 경우
+        </div>
+
+        <p style="font-size: 18px; color: #666; margin-bottom: 20px;">아래 버튼을 눌러 입학 접수를 시작해 주세요.</p>
         <button class="btn-start" onclick="nextStep()">접수하기</button>
       </div>
     </div>
 
-    <!-- [1] 지원 유형 (신입생 / 전입생) -->
+    <!-- [1] 지원 유형 -->
     <div class="step" id="step-1">
       <div class="question-title">입학 유형을 선택해 주세요.</div>
       <div class="btn-group-row">
@@ -344,8 +351,22 @@
       <input type="tel" id="parent-phone" maxlength="13" placeholder="010-0000-0000" oninput="autoHyphen(this)" autocomplete="off">
     </div>
 
-    <!-- [9] 요약 및 동의 -->
+    <!-- [9] 신규 추가: 추첨 참석 여부 -->
     <div class="step" id="step-9">
+      <div class="question-title">추첨일 참석 여부를 선택해 주세요.</div>
+      <div style="background: #f0f4f8; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 16px; color: #444; line-height: 1.6; text-align: left; word-break: keep-all;">
+        <strong style="font-size: 18px; color: #2c3e50;">[추첨 안내]</strong><br>
+        • 일시: 2026년 10월 30일(금) 14시<br>
+        • 장소: 청주교대부설초 본관 2층 세미나실
+      </div>
+      <div class="btn-group-row">
+        <button class="btn-large attend-btn" onclick="selectAttendance('참석')">참석</button>
+        <button class="btn-large attend-btn" onclick="selectAttendance('불참')">불참</button>
+      </div>
+    </div>
+
+    <!-- [10] 요약 및 동의 -->
+    <div class="step" id="step-10">
       <div class="question-title">입력하신 내용을 확인해 주세요.</div>
       <table class="summary-table">
         <tr><th>접수 번호</th><td id="sum-receipt" style="font-weight: bold; color: #777;"></td></tr>
@@ -356,12 +377,13 @@
         <tr><th>주소</th><td id="sum-address"></td></tr>
         <tr><th>보호자 성명</th><td id="sum-parent-name"></td></tr>
         <tr><th>연락처</th><td id="sum-parent-phone"></td></tr>
+        <tr><th>추첨 참석</th><td id="sum-attendance" style="font-weight: bold; color: #4A90E2;"></td></tr>
       </table>
 
       <div class="privacy-box">
         [개인정보 수집 및 이용 동의]<br>
         수집 목적: 신입생/전입생 입학 접수 및 학사 관리<br>
-        수집 항목: 자녀 정보, 주민등록번호, 주소, 보호자 정보<br>
+        수집 항목: 자녀 정보, 주민등록번호, 주소, 보호자 정보, 추첨 참석 여부<br>
         보유 기간: 입학 처리 완료 시까지
       </div>
       <label class="checkbox-label">
@@ -370,21 +392,38 @@
       </label>
     </div>
 
-    <!-- [10] 완료 (캡처 영역 추가 및 타이머 제거) -->
-    <div class="step" id="step-10">
+    <!-- [11] 완료 및 접수증 캡처 -->
+    <div class="step" id="step-11">
       <div style="text-align: center;">
         
-        <!-- 캡처될 접수증 영역 -->
-        <div id="receipt-capture-area" style="background:#ffffff; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-          <h2 style="font-size: 28px; color: #27ae60; margin-bottom: 20px;">접수가 완료되었습니다!</h2>
-          <div style="background:#f0f4f8; padding: 20px; border-radius: 12px; margin-bottom: 10px;">
-            <p style="font-size: 16px; color: #555; margin-bottom: 10px;">부여된 접수 번호</p>
-            <p style="font-size: 32px; font-weight: bold; color: #4A90E2;" id="final-receipt"></p>
-          </div>
-          <p style="font-size: 18px; color: #333; font-weight: bold; margin-top: 15px;">청주교육대학교 부설초등학교</p>
+        <!-- 실물과 동일한 접수표 캡처 영역 -->
+        <div id="receipt-capture-area" style="background:#ffffff; padding: 30px 20px; border: 2px solid #333; margin-bottom: 15px; width: 100%; max-width: 400px; margin-left: auto; margin-right: auto;">
+          <h2 style="font-size: 32px; color: #333; margin-bottom: 25px; letter-spacing: 10px; font-weight: bold;">접수표</h2>
+          <p style="font-size: 20px; color: #333; margin-bottom: 25px;" id="receipt-subtitle"></p>
+          
+          <table style="width: 100%; border-collapse: collapse; text-align: center; border: 1px solid #333; font-size: 18px; color: #333; margin-bottom: 30px;">
+            <tr>
+              <th style="border: 1px solid #333; padding: 15px; background: #f9f9f9; width: 35%;">※ 접수번호</th>
+              <td style="border: 1px solid #333; padding: 15px; font-weight: bold; font-size: 24px;" id="final-receipt"></td>
+            </tr>
+            <tr id="receipt-grade-row" style="display: none;">
+              <th style="border: 1px solid #333; padding: 15px; background: #f9f9f9;">학년</th>
+              <td style="border: 1px solid #333; padding: 15px; font-weight: bold;" id="receipt-grade"></td>
+            </tr>
+            <tr>
+              <th style="border: 1px solid #333; padding: 15px; background: #f9f9f9;">성별</th>
+              <td style="border: 1px solid #333; padding: 15px; font-weight: bold; font-size: 20px;" id="receipt-gender"></td>
+            </tr>
+            <tr>
+              <th style="border: 1px solid #333; padding: 15px; background: #f9f9f9;">성명</th>
+              <td style="border: 1px solid #333; padding: 15px; font-weight: bold; font-size: 22px; letter-spacing: 5px;" id="receipt-name"></td>
+            </tr>
+          </table>
+          <p style="font-size: 18px; color: #333; font-weight: bold;">청주교육대학교부설초등학교</p>
         </div>
         
-        <!-- 중요 안내 사항 -->
+        <!-- 안내 사항들 -->
+        <p style="font-size: 16px; color: #e74c3c; font-weight: bold; margin-bottom: 15px;">※ 별도의 종이 접수표는 발급하지 않으니 반드시 사진으로 저장해 주세요.</p>
         <div style="background: #fff3f3; border-left: 4px solid #e74c3c; padding: 15px; margin-bottom: 25px; text-align: left;">
           <p style="font-size: 18px; color: #c0392b; font-weight: bold; word-break: keep-all; line-height: 1.4;">
             ※ 필수 안내사항<br>
@@ -392,7 +431,6 @@
           </p>
         </div>
 
-        <!-- 하단 액션 버튼 -->
         <div style="display: flex; gap: 10px; justify-content: center;">
           <button onclick="saveReceiptImage()" style="flex: 1; height: 60px; font-size: 18px; background: #34495e; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;">사진 저장하기</button>
           <button onclick="location.reload()" style="flex: 1; height: 60px; font-size: 18px; background: #e0e0e0; color: #555; border: none; border-radius: 12px; font-weight: bold; cursor: pointer;">처음으로</button>
@@ -410,10 +448,11 @@
 </div>
 
 <script>
-  const GAS_URL = "https://script.google.com/macros/s/AKfycby1rLtmFZYE43iFb3E_UnjkX43T8keod6_E_NdzKmoy_A1KtbKSTFLLf0Q7cZV9st0a/exec";
+  // 이곳에 새로 배포한 GAS Web App URL을 넣으세요.
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbzW-lZ6180K39PZTAa1JsTVcq0pxw75rNkGSIwWWZ4ixlndSm28KQnZ1D7rGiGRVzNY/exec";
 
   let currentStep = 0;
-  const totalSteps = 9; 
+  const totalSteps = 10; // 추첨 여부 단계가 추가되어 10단계(요약 화면)로 변경됨
 
   const formData = {
     type: '',
@@ -423,7 +462,8 @@
     rrn: '',
     address: '',
     parentName: '',
-    parentPhone: ''
+    parentPhone: '',
+    attendance: ''
   };
 
   const wrap = document.getElementById('address-wrap');
@@ -437,7 +477,7 @@
     const progressContainer = document.getElementById('progress-container');
     const nextBtn = document.getElementById('btn-next-action');
 
-    if (currentStep === 0 || currentStep === 10) {
+    if (currentStep === 0 || currentStep === 11) {
       navBtns.style.display = 'none';
       progressContainer.style.display = 'none';
     } else {
@@ -447,7 +487,7 @@
       const percent = (currentStep / totalSteps) * 100;
       document.getElementById('progress-fill').style.width = percent + '%';
 
-      if (currentStep === 9) {
+      if (currentStep === 10) {
         nextBtn.innerText = '제출하기';
         nextBtn.style.background = '#27ae60';
         populateSummary();
@@ -504,6 +544,13 @@
     formData.gender = val;
     const btns = document.querySelectorAll('.gender-btn');
     btns.forEach(b => b.classList.toggle('selected', b.innerText === (val === '남' ? '남자' : '여자')));
+    setTimeout(() => nextStep(), 200); 
+  }
+
+  function selectAttendance(val) {
+    formData.attendance = val;
+    const btns = document.querySelectorAll('.attend-btn');
+    btns.forEach(b => b.classList.toggle('selected', b.innerText === val));
     setTimeout(() => nextStep(), 200); 
   }
 
@@ -568,6 +615,9 @@
       formData.parentPhone = pPhone;
     }
     if (currentStep === 9) {
+      if (!formData.attendance) { alert("추첨일 참석 여부를 선택해 주세요."); return; }
+    }
+    if (currentStep === 10) {
       if (!document.getElementById('privacy-agree').checked) {
         alert("개인정보 수집 및 이용에 동의하셔야 제출이 가능합니다.");
         return;
@@ -587,6 +637,7 @@
     document.getElementById('sum-address').innerText = formData.address;
     document.getElementById('sum-parent-name').innerText = formData.parentName;
     document.getElementById('sum-parent-phone').innerText = formData.parentPhone;
+    document.getElementById('sum-attendance').innerText = formData.attendance;
   }
 
   function submitData() {
@@ -603,9 +654,27 @@
     .then(data => {
       if(data.result === "success") {
         document.getElementById('final-receipt').innerText = data.receiptNo;
-        currentStep = 10;
+        
+        // 종이 양식과 동일하게 캡처 영역 데이터 세팅
+        document.getElementById('receipt-subtitle').innerText = `2027학년도 ${formData.type}`;
+        document.getElementById('receipt-name').innerText = formData.childName;
+        
+        // 동그라미(선택) 효과를 CSS 테두리로 구현
+        if (formData.gender === '남') {
+          document.getElementById('receipt-gender').innerHTML = `<span style="border: 2px solid #333; border-radius: 50%; padding: 3px 12px;">남</span> &nbsp;&nbsp;&nbsp;&nbsp; 여`;
+        } else {
+          document.getElementById('receipt-gender').innerHTML = `남 &nbsp;&nbsp;&nbsp;&nbsp; <span style="border: 2px solid #333; border-radius: 50%; padding: 3px 12px;">여</span>`;
+        }
+        
+        if(formData.type === '전입생') {
+          document.getElementById('receipt-grade-row').style.display = 'table-row';
+          document.getElementById('receipt-grade').innerText = `${formData.grade}학년`;
+        } else {
+          document.getElementById('receipt-grade-row').style.display = 'none';
+        }
+
+        currentStep = 11;
         updateUI();
-        // 타이머 자동 초기화 함수(startAutoResetTimer) 호출 제거됨
       } else {
         throw new Error(data.message || "서버 에러");
       }
@@ -617,14 +686,11 @@
     });
   }
 
-  // 화면 캡처 및 이미지 다운로드 함수
   function saveReceiptImage() {
     const captureDiv = document.getElementById('receipt-capture-area');
-    
-    // 모바일 환경을 고려하여 캡처 품질(scale)을 높임
     html2canvas(captureDiv, { scale: 2, backgroundColor: "#ffffff" }).then(canvas => {
       const link = document.createElement('a');
-      link.download = `입학접수증_${formData.childName}.png`; // 파일명에 학생 이름 자동 포함
+      link.download = `입학접수표_${formData.childName}.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
     });
