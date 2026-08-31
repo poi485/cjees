@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>2027학년도 신입생/전입생 입학 접수</title>
   <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <!-- 화면 캡처(저장) 기능을 위한 라이브러리 추가 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     * {
@@ -19,22 +20,24 @@
       background-color: #f4f7f6;
       display: flex;
       justify-content: center;
+      align-items: center;
       min-height: 100vh;
+      overflow: hidden;
       user-select: none;
     }
 
     .kiosk-container {
       width: 100vw;
-      min-height: 100vh;
-      min-height: 100dvh; 
+      height: 100vh;
       max-width: 600px;
       background: #ffffff;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 40px 25px; 
+      padding: 40px 30px;
       position: relative;
       box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      overflow-y: auto; /* 스마트폰 세로 스크롤 허용 */
     }
 
     .header {
@@ -64,7 +67,7 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      margin: 30px 0;
+      margin: 20px 0;
     }
 
     .step {
@@ -217,8 +220,7 @@
     .nav-buttons {
       display: flex;
       gap: 10px;
-      margin-top: 20px;
-      margin-bottom: 20px; 
+      margin-top: 10px;
     }
     .btn-nav {
       flex: 1;
@@ -267,7 +269,6 @@
       <div style="text-align: center;">
         <h2 style="font-size: 26px; color: #333; margin-bottom: 20px; line-height: 1.4;">청주교육대학교 부설초등학교에<br>오신 것을 환영합니다!</h2>
         
-        <!-- 신규 추가된 당첨취소 경고 영역 -->
         <div style="background: #fff3f3; border: 2px solid #e74c3c; padding: 15px; border-radius: 12px; margin-bottom: 30px; text-align: left; font-size: 15px; color: #333; line-height: 1.6; word-break: keep-all;">
           <strong style="color: #c0392b; font-size: 18px;">[당첨취소에 대한 안내]</strong><br>
           (1) 원서접수 게시일(2026.10.6.) 현재 청주시에 주민등록이 되어 있지 않은 경우<br>
@@ -280,7 +281,7 @@
       </div>
     </div>
 
-    <!-- [1] 지원 유형 -->
+    <!-- [1] 지원 유형 (신입생 / 전입생) -->
     <div class="step" id="step-1">
       <div class="question-title">입학 유형을 선택해 주세요.</div>
       <div class="btn-group-row">
@@ -351,7 +352,7 @@
       <input type="tel" id="parent-phone" maxlength="13" placeholder="010-0000-0000" oninput="autoHyphen(this)" autocomplete="off">
     </div>
 
-    <!-- [9] 신규 추가: 추첨 참석 여부 -->
+    <!-- [9] 추첨 참석 여부 -->
     <div class="step" id="step-9">
       <div class="question-title">추첨일 참석 여부를 선택해 주세요.</div>
       <div style="background: #f0f4f8; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 16px; color: #444; line-height: 1.6; text-align: left; word-break: keep-all;">
@@ -401,7 +402,7 @@
           <h2 style="font-size: 32px; color: #333; margin-bottom: 25px; letter-spacing: 10px; font-weight: bold;">접수표</h2>
           <p style="font-size: 20px; color: #333; margin-bottom: 25px;" id="receipt-subtitle"></p>
           
-          <table style="width: 100%; border-collapse: collapse; text-align: center; border: 1px solid #333; font-size: 18px; color: #333; margin-bottom: 30px;">
+          <table style="width: 100%; border-collapse: collapse; text-align: center; border: 1px solid #333; font-size: 18px; color: #333; margin-bottom: 25px;">
             <tr>
               <th style="border: 1px solid #333; padding: 15px; background: #f9f9f9; width: 35%;">※ 접수번호</th>
               <td style="border: 1px solid #333; padding: 15px; font-weight: bold; font-size: 24px;" id="final-receipt"></td>
@@ -419,11 +420,20 @@
               <td style="border: 1px solid #333; padding: 15px; font-weight: bold; font-size: 22px; letter-spacing: 5px;" id="receipt-name"></td>
             </tr>
           </table>
+
+          <!-- 추첨 안내 박스 삽입 -->
+          <div style="text-align: left; margin-bottom: 25px; font-size: 14px; color: #333; line-height: 1.6; padding: 12px; border: 1px solid #ccc; background-color: #f9f9f9;">
+            <strong style="color: #2c3e50;">[추첨 안내]</strong><br>
+            • 일시: 2026년 10월 30일(금) 14시<br>
+            • 장소: 청주교대부설초 본관 2층 세미나실
+          </div>
+
           <p style="font-size: 18px; color: #333; font-weight: bold;">청주교육대학교부설초등학교</p>
         </div>
         
-        <!-- 안내 사항들 -->
         <p style="font-size: 16px; color: #e74c3c; font-weight: bold; margin-bottom: 15px;">※ 별도의 종이 접수표는 발급하지 않으니 반드시 사진으로 저장해 주세요.</p>
+        
+        <!-- 중요 안내 사항 -->
         <div style="background: #fff3f3; border-left: 4px solid #e74c3c; padding: 15px; margin-bottom: 25px; text-align: left;">
           <p style="font-size: 18px; color: #c0392b; font-weight: bold; word-break: keep-all; line-height: 1.4;">
             ※ 필수 안내사항<br>
@@ -449,10 +459,10 @@
 
 <script>
   // 이곳에 새로 배포한 GAS Web App URL을 넣으세요.
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbzW-lZ6180K39PZTAa1JsTVcq0pxw75rNkGSIwWWZ4ixlndSm28KQnZ1D7rGiGRVzNY/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycby1rLtmFZYE43iFb3E_UnjkX43T8keod6_E_NdzKmoy_A1KtbKSTFLLf0Q7cZV9st0a/exec";
 
   let currentStep = 0;
-  const totalSteps = 10; // 추첨 여부 단계가 추가되어 10단계(요약 화면)로 변경됨
+  const totalSteps = 10; 
 
   const formData = {
     type: '',
@@ -655,11 +665,9 @@
       if(data.result === "success") {
         document.getElementById('final-receipt').innerText = data.receiptNo;
         
-        // 종이 양식과 동일하게 캡처 영역 데이터 세팅
         document.getElementById('receipt-subtitle').innerText = `2027학년도 ${formData.type}`;
         document.getElementById('receipt-name').innerText = formData.childName;
         
-        // 동그라미(선택) 효과를 CSS 테두리로 구현
         if (formData.gender === '남') {
           document.getElementById('receipt-gender').innerHTML = `<span style="border: 2px solid #333; border-radius: 50%; padding: 3px 12px;">남</span> &nbsp;&nbsp;&nbsp;&nbsp; 여`;
         } else {
